@@ -27,6 +27,7 @@ prompt_sum = """ Act as an expert German-English translator.
 
 st.title('🇩🇪 _German Text Guru_')
 st.markdown('To improve your German vocabulary, we will provide you the meaning of each word and its part of speech from your text.')
+st.caption(':rainbow[Deutsch macht Spaß!]🍻🇩🇪🙌')
 st.divider()
 
 # Get user input in a text box
