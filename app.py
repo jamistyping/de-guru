@@ -2,36 +2,34 @@ import streamlit as st
 import openai
 import pandas as pd
 import json
-import time
 
 # Get API user keys from sidebar called OpenAI API Keys
 user_api_key = st.sidebar.text_input("OpenAI API Key", type="password")
 
 client = openai.OpenAI(api_key=user_api_key)
-prompt = """ Act as an expert German-English translator. You will be given a German passage 
-        and then select some interesting german vocabulary in A2 level or upper that appear in the text.
+prompt = """ You are an expert German-English translator. You will be given a German passage.
+        Select some interesting german vocabulary in A2 level or upper that appear in the text.
+        Definite article in the text will not be choosen as vocabulary.
         List the vocabulary in a JSON array, one vocabulary per line.
-        Each line should contains 3 categories:
-            1) 'Words' - German vocabulary in A2 level or upper appeared in the text received.
-                    If it is a noun, its definite article('der', 'die', 'das') of the noun must be included.
-                    If it is a verb an adjective, state it in its infinitive form. 
-                    Definite article must not be selected as vocabulary on the list.
-            2) 'Part of Speech' - noun, verb, adjective, adverb, or conjunction. write in lower case.
-            3) 'Meaning' - meaning in english
-            (Sort the vocabulary in order of words' difficulty.)
+        If it's a noun, indicate its definite article, which are "der", "die", or "das" in front of the word.
+        Each line should contains 3 fields of information:
+            - "Words" -- the vocabulary
+             -- If it is a verb or adjective, write in its infinitive form. 
+            - "Part of Speech" -- noun, verb, adjective, adverb, or conjunction. write in lower case.
+            - "Meaning" -- meaning in english
+            (Sort the vocabulary in order of difficulty.)
         """
-prompt_sum = """ Act as an expert German-English translator. 
-            Summerize the german text in simple 2-3 English sentences.
+prompt_sum = """ Act as an expert German-English translator. You will be given a German text. 
+            Summerize that text or each paragraph in English no more than 5 sentences.
+            Use simple words and short sentences. 
             """
 
-
 st.title('🇩🇪 _German Text Guru_')
-st.markdown('To improve your German vocabulary, we will provide you the meaning of each word and its part of speech from your text.')
-st.caption(':rainbow[Deutsch macht Spaß!]🍻🇩🇪🙌')
-st.divider()
+st.markdown(':grey[To improve your German vocabulary, we will provide you the meaning of each word and its part of speech from your text.]')
+st.subheader(':rainbow[_Deutsch_ macht Spaß!]🍻😎', divider='rainbow')
 
 # Get user input in a text box
-user_input = st.text_area("Enter German text.", height=200, value='German text here...')
+user_input = st.text_area("Enter German text.", height=150, value='German text here...')
 if not user_input:
     st.warning('You have not enter any German text...🥺')
 
@@ -39,7 +37,6 @@ if not user_input:
 summerize = st.checkbox('Summerize the text in English', value=False)
 if summerize:
     st.write(':grey[*We will do our best to help you better understand the text!*]')
-
 
 
 #submit button 
@@ -67,15 +64,7 @@ if st.button('Submit', type='primary'):
 
     # create a table with 3 columns: words, part of speech, meaning
     st.markdown('German Vocabulary:')
-    vocab_all = response.choices[0].message.content
-    vocab = json.loads(vocab_all)
+    vocab_results = response.choices[0].message.content
+    vocab = json.loads(vocab_results)
     vocab_table = pd.DataFrame.from_dict(vocab)
     st.table(vocab_table)
-
-   
-
-
-
-
-
-    
